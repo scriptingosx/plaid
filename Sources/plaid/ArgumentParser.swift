@@ -35,8 +35,8 @@ class ArgumentParser {
         } else if c > 3 {
             return .failure(.tooManyArguments)
         }
-        // we have at least one argument, it should be a verb
         
+        // we have at least one argument, it should be a verb
         guard let v = Verb(rawValue: arguments[0]) else {
             print("unknown verb: \(arguments[0])")
             return .failure(.unknownVerb)
@@ -44,8 +44,10 @@ class ArgumentParser {
         verb = v
         
         if c == 2 {
+            // 2 arguments, the second is the filepath
             filepath = arguments[1]
         } else if c == 3 {
+            // 3 arguments, the second is the keypath and the third the filepath
             filepath = arguments[2]
             keypath = arguments[3]
         }
