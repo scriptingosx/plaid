@@ -1,8 +1,7 @@
 import XCTest
-import class Foundation.Bundle
 
 final class plaidTests: XCTestCase {
-    func testHelloWorld() throws {
+    /*func testHelloWorld() throws {
         let result = try runPlaidCommand(arguments: [])
         
         switch result {
@@ -11,9 +10,20 @@ final class plaidTests: XCTestCase {
         case .failure:
             XCTFail()
         }
-    }
+    }*/
 
+    func testVersion() throws {
+        let result = try runPlaidCommand(arguments: ["version"])
+        
+        switch result {
+        case .success(let output):
+            XCTAssertEqual(output, "0.1\n")
+        case .failure:
+            XCTFail()
+        }
+    }
+    
     static var allTests = [
-        ("testHelloWorld", testHelloWorld),
-    ]
+        ("testVersion", testVersion),
+        ]
 }
