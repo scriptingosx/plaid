@@ -13,27 +13,53 @@ class ArgumentParser {
         case version
         case help
         case read
+        case write
+        case delete
+        case count
+        case export
+    }
+    
+    enum Options : String {
+        case stdin
+        case stdout
     }
     
     enum ParserError : Error {
         case noArguments
+        case notEnoughArguments
         case tooManyArguments
+        case fileNotFound
         case unknownVerb
+        case unknownOption
     }
     
     var verb : Verb?
+    var options : [Options] = []
+    var remainingArguments : [String] = []
     var keypath : String?
+    var value : String?
     var filepath : String?
     var fileURL : URL?
-        
+    var stdin : String?
+    
+    func parseURL(path : String) -> URL? {
+        let fm = FileManager.default
+        let cwd = URL(fileURLWithPath: fm.currentDirectoryPath)
+        let url = URL(fileURLWithPath: path, relativeTo: cwd)
+        if fm.fileExists(atPath: url.path) {
+            return url
+        } else {
+            return nil
+        }
+    }
+
+    
     // usage is: plaid verb [keypath] filepath
-    func parse(arguments: [String]) -> Result<Verb?, ParserError> {
+    func parse(arguments: [String]) -> Result<Verb, ParserError> {
         let c = arguments.count
         
         if c == 0 {
             return .failure(.noArguments)
-        } else if c > 3 {
-            return .failure(.tooManyArguments)
         }
         
         // we have at least one argument, it should be a verb
@@ -43,17 +69,57 @@ class ArgumentParser {
         }
         verb = v
         
-        if c == 2 {
-            // 2 arguments, the second is the filepath
-            filepath = arguments[1]
-        } else if c == 3 {
-            // 3 arguments, the second is the keypath and the third the filepath
-            filepath = arguments[2]
-            keypath = arguments[3]
+        // search for options that start with `-` or `--`
+        for argument in arguments.dropFirst() {
+            
+            if argument.starts(with: "-") {
+                // remove leading dashes
+                let trimmedArgument = String(argument.drop(while: {$0 == "-"}))
+                guard let option = Options(rawValue: trimmedArgument) else {
+                    return .failure(.unknownOption)
+                }
+                options.append(option)
+            } else {
+                remainingArguments.append(argument)
+            }
         }
         
-        // parse the file path
+        // interpretation of the remaining arguments depends on the verb
+        switch verb! {
+        case .version, .help:
+            if remainingArguments.count > 0 {
+                return .failure(.tooManyArguments)
+            } 
+        case .read:
+            if !options.contains(.stdin) {
+                if remainingArguments.count == 0 {
+                    return .failure(.notEnoughArguments)
+                } else if remainingArguments.count > 2 {
+                    return .failure(.tooManyArguments)
+                } else {
+                    // last argument is filepath
+                    filepath = remainingArguments.last
+                    if remainingArguments.count == 2 {
+                        keypath = remainingArguments.first
+                    }
+                }
+                fileURL = parseURL(path: filepath!)
+                if fileURL == nil {
+                    return .failure(.fileNotFound)
+                }
+            } else { // read from stdin
+                if remainingArguments.count == 0 {
+                    return .failure(.notEnoughArguments)
+                } else if remainingArguments.count > 1 {
+                    return .failure(.tooManyArguments)
+                } else {
+                    keypath = remainingArguments.first
+                }
+            }
+        default:
+            break
+        }
         
-        return .success(verb)
+        return .success(verb!)
     }
 }

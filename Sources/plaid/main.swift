@@ -19,6 +19,10 @@ where verb is one of the following:
     version     prints the version of the tool
     help        shows this output
     read        prints the contents of the property list at filepath
+    write
+    delete
+    add
+    export      
 """)
 }
 
@@ -31,14 +35,14 @@ case .failure(let parseError):
     printUsage()
     exit(1)
 case .success(let verb):
-    if verb != nil {
-        switch verb! {
-        case .version:
-            print(version)
-        case .help:
-            printUsage()
-        case .read:
-            print("read")
-        }
+    switch verb {
+    case .version:
+        print(version)
+    case .help:
+        printUsage()
+    case .read:
+        print("read")
+    default:
+        print(verb.rawValue)
     }
 }
