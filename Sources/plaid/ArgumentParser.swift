@@ -40,7 +40,6 @@ class ArgumentParser {
     var value : String?
     var filepath : String?
     var fileURL : URL?
-    var stdin : String?
     
     func parseURL(path : String) -> URL? {
         let fm = FileManager.default
@@ -108,11 +107,9 @@ class ArgumentParser {
                     return .failure(.fileNotFound)
                 }
             } else { // read from stdin
-                if remainingArguments.count == 0 {
-                    return .failure(.notEnoughArguments)
-                } else if remainingArguments.count > 1 {
+                if remainingArguments.count > 1 {
                     return .failure(.tooManyArguments)
-                } else {
+                } else if remainingArguments.count == 1 {
                     keypath = remainingArguments.first
                 }
             }

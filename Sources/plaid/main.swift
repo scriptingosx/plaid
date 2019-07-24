@@ -26,13 +26,31 @@ where verb is one of the following:
 """)
 }
 
+func readPlist(url: Foundation.URL) -> Any? {
+    if let xmlData = FileManager.default.contents(atPath: url.path) {
+        if let plist = try? PropertyListSerialization.propertyList(from: xmlData, format: nil) {
+            return plist
+        }
+    }
+    return nil
+}
+
+func readPlistFromStdin() -> Any? {
+    let stdin = FileHandle.standardInput
+    let xmlData = stdin.readDataToEndOfFile()
+    if let plist = try? PropertyListSerialization.propertyList(from: xmlData, format: nil ) {
+        return plist
+    }
+    return nil
+}
+
 let args = Array(CommandLine.arguments.dropFirst())
 let parser = ArgumentParser()
 let result = parser.parse(arguments: args)
 
 switch result {
 case .failure(let parseError):
-    printUsage()
+    print("Error \(parseError)")
     exit(1)
 case .success(let verb):
     switch verb {
@@ -41,7 +59,24 @@ case .success(let verb):
     case .help:
         printUsage()
     case .read:
-        print("read")
+        var plist : Any? = nil
+        if parser.options.contains(.stdin) {
+            plist = readPlistFromStdin()
+        } else {
+            if (parser.fileURL != nil) {
+                plist = readPlist(url: parser.fileURL!)
+            }
+        }
+        if plist == nil {
+            print("could not read \(parser.filepath ?? "<none>")")
+        } else {
+            if (parser.keypath == nil) {
+                print(plist!)
+            } else {
+                
+            }
+        }
+        
     default:
         print(verb.rawValue)
     }
