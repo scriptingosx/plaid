@@ -60,5 +60,52 @@ final class ReadTests: XCTestCase {
         }
     }
 
+    func testReadKeyAfterArrayIndex() {
+        let filepath = productsDirectory.path + "/DictsInArray.plist"
+        let keypath = "@index.2.name"
+        let args = ["read", keypath, filepath]
+        guard let result = try? runPlaidCommand(arguments: args) else {
+            XCTFail()
+            return
+        }
+        switch result {
+        case .failure:
+            XCTFail()
+        case .success(let output):
+            XCTAssertEqual(output, "Charlie\n")
+        }
+    }
+
+    func testReadKeyinArray() {
+        let filepath = productsDirectory.path + "/DictsInArray.plist"
+        let keypath = "@index.2.name"
+        let args = ["read", keypath, filepath]
+        guard let result = try? runPlaidCommand(arguments: args) else {
+            XCTFail()
+            return
+        }
+        switch result {
+        case .failure:
+            XCTFail()
+        case .success(let output):
+            XCTAssertEqual(output, "Charlie\n")
+        }
+    }
+
+    func testReadCountArray() {
+        let filepath = productsDirectory.path + "/DictsInArray.plist"
+        let keypath = "@count"
+        let args = ["read", keypath, filepath]
+        guard let result = try? runPlaidCommand(arguments: args) else {
+            XCTFail()
+            return
+        }
+        switch result {
+        case .failure:
+            XCTFail()
+        case .success(let output):
+            XCTAssertEqual(output, "5\n")
+        }
+    }
 
 }

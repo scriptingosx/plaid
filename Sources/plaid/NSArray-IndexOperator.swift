@@ -8,7 +8,9 @@
 import Foundation
 
 // extend the NSArray class with an @index keypath operator
-// follwoing this: https://funwithobjc.tumblr.com/post/1527111790/defining-custom-key-path-operators
+// following this: https://funwithobjc.tumblr.com/post/1527111790/defining-custom-key-path-operators
+//
+// Apple docs: https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/KeyValueCoding/CollectionOperators.html#//apple_ref/doc/uid/20002176-BAJEAIEE
 
 @objc extension NSArray {
     func _index(forKeyPath keyPath: String) -> Any? {

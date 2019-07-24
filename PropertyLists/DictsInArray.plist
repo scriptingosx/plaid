@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>name</key>
+		<string>Emil</string>
+		<key>number</key>
+		<string>1005</string>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Daisy</string>
+		<key>number</key>
+		<string>1004</string>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Charlie</string>
+		<key>number</key>
+		<string>1003</string>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Bob</string>
+		<key>number</key>
+		<string>1002</string>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Alice</string>
+		<key>number</key>
+		<string>1001</string>
+	</dict>
+</array>
+</plist>

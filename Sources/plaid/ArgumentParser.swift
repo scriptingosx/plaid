@@ -15,7 +15,6 @@ class ArgumentParser {
         case read
         case write
         case delete
-        case count
         case export
     }
     
@@ -36,7 +35,7 @@ class ArgumentParser {
     var verb : Verb?
     var options : [Options] = []
     var remainingArguments : [String] = []
-    var keypath : String?
+    var keypaths : [String?] = []
     var value : String?
     var filepath : String?
     var fileURL : URL?
@@ -93,25 +92,17 @@ class ArgumentParser {
             if !options.contains(.stdin) {
                 if remainingArguments.count == 0 {
                     return .failure(.notEnoughArguments)
-                } else if remainingArguments.count > 2 {
-                    return .failure(.tooManyArguments)
                 } else {
                     // last argument is filepath
                     filepath = remainingArguments.last
-                    if remainingArguments.count == 2 {
-                        keypath = remainingArguments.first
-                    }
+                    keypaths = remainingArguments.dropLast()
                 }
                 fileURL = parseURL(path: filepath!)
                 if fileURL == nil {
                     return .failure(.fileNotFound)
                 }
             } else { // read from stdin
-                if remainingArguments.count > 1 {
-                    return .failure(.tooManyArguments)
-                } else if remainingArguments.count == 1 {
-                    keypath = remainingArguments.first
-                }
+                keypaths = remainingArguments
             }
         default:
             break
