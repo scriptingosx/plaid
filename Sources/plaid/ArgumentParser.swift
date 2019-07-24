@@ -13,14 +13,15 @@ class ArgumentParser {
         case version
         case help
         case read
-        case write
-        case delete
-        case export
+        // case write
+        // case delete
     }
     
     enum Options : String {
         case stdin
         case stdout
+        //case flat
+        case xml
     }
     
     enum ParserError : Error {
@@ -67,9 +68,8 @@ class ArgumentParser {
         }
         verb = v
         
-        // search for options that start with `-` or `--`
+        // search for options that start with `-`
         for argument in arguments.dropFirst() {
-            
             if argument.starts(with: "-") {
                 // remove leading dashes
                 let trimmedArgument = String(argument.drop(while: {$0 == "-"}))
@@ -104,10 +104,7 @@ class ArgumentParser {
             } else { // read from stdin
                 keypaths = remainingArguments
             }
-        default:
-            break
         }
-        
         return .success(verb!)
     }
 }

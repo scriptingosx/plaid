@@ -19,29 +19,20 @@ where verb is one of the following:
     version     prints the version of the tool
     help        shows this output
     read        prints the contents of the property list at filepath
-    write
-    delete
-    add
-    export      
+    write       -not yet-
+    delete      -not yet-
 """)
 }
 
-func readPlist(url: Foundation.URL) -> Any? {
-    if let xmlData = FileManager.default.contents(atPath: url.path) {
-        if let plist = try? PropertyListSerialization.propertyList(from: xmlData, format: nil) {
-            return plist
-        }
+func printObject(_ object: NSObject, options: [ArgumentParser.Options] = []) {
+    if options.contains(.xml) {
+        let xmldata = try? PropertyListSerialization.data(fromPropertyList: object, format: .xml, options: 0)
+        let plistText = String(data: xmldata!, encoding: .utf8)
+        print(plistText ?? "<no value>")
+    }  else {
+        print(object)
     }
-    return nil
-}
 
-func readPlistFromStdin() -> Any? {
-    let stdin = FileHandle.standardInput
-    let xmlData = stdin.readDataToEndOfFile()
-    if let plist = try? PropertyListSerialization.propertyList(from: xmlData, format: nil ) {
-        return plist
-    }
-    return nil
 }
 
 let args = Array(CommandLine.arguments.dropFirst())
@@ -63,14 +54,15 @@ case .success(let verb):
         if parser.options.contains(.stdin) {
             plist = PropertyListFile(url: nil)
         } else {
-            plist = PropertyListFile(url: parser.fileURL!)
+            plist = PropertyListFile(url: parser.fileURL)
         }
         if plist?.rootObject == nil {
             print("could not read \(parser.filepath ?? "<none>")")
+            exit(1)
         } else {
             var object = plist?.rootObject!
             if (parser.keypaths.count == 0) {
-                print(String(describing: object))
+                printObject(object!, options: parser.options)
             } else {
                 for keypath in parser.keypaths {
                     guard let newobject = object!.value(forKeyPath: keypath!) else {
@@ -79,11 +71,8 @@ case .success(let verb):
                     }
                     object = newobject as? NSObject
                 }
-                print(object ?? "<no value>")
+                printObject(object!, options: parser.options)
             }
         }
-        
-    default:
-        print(verb.rawValue)
     }
 }
