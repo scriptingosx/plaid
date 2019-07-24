@@ -59,21 +59,18 @@ case .success(let verb):
     case .help:
         printUsage()
     case .read:
-        var plist : Any? = nil
-        if parser.options.contains(.stdin) {
-            plist = readPlistFromStdin()
-        } else {
-            if (parser.fileURL != nil) {
-                plist = readPlist(url: parser.fileURL!)
-            }
-        }
-        if plist == nil {
+        let plist = PropertyListFile(url: parser.fileURL!)
+        if plist.rootObject == nil {
             print("could not read \(parser.filepath ?? "<none>")")
         } else {
             if (parser.keypath == nil) {
-                print(plist!)
+                print(plist.rootObject!)
             } else {
-                
+                if let value = plist.rootObject!.value(forKeyPath: parser.keypath!) {
+                    print(value)
+                } else {
+                    print("no key \(parser.keypath!) in \(parser.filepath!)")
+                }
             }
         }
         
